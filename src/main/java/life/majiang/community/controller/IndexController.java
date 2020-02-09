@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
- * Created by codedrinker on 2019/4/24.
+ * 处理论坛网站首页
  */
 @Controller
 public class IndexController {

@@ -1,4 +1,4 @@
-## 码匠社区
+## UniCommunity
 
 ## 资料
 [Spring 文档](https://spring.io/guides)  
@@ -12,8 +12,7 @@
 [Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#setting-attribute-values)
 
 ## 工具
-[Git](https://git-scm.com/download)  
-[Visual Paradigm](https://www.visual-paradigm.com)   
+[Git](https://git-scm.com/download)     
 [Flyway](https://flywaydb.org/getstarted/firststeps/maven)
 [Lombok](https://www.projectlombok.org)
 

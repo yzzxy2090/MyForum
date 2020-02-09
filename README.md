@@ -16,6 +16,9 @@
 [Flyway](https://flywaydb.org/getstarted/firststeps/maven)
 [Lombok](https://www.projectlombok.org)
 
+## GitHub OAuth
+[GitHub OAuth授权登录](https://github.com/yzzxy2090/UniCommunity/blob/master/Summaries/Github%E7%99%BB%E5%BD%95.md)
+
 ## 脚本
 ```sql
 CREATE TABLE USER

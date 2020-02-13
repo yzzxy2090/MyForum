@@ -80,7 +80,7 @@ public class AuthorizeController {
             //将新用户对象插入到数据库中
             userMapper.insert(user);
             /**
-             * 并将token作为Cookie加入到response中
+             * 并将token放入Cookie加入到response中
              * 这样浏览器带着该Cookie去请求该论坛网站服务器时
              * 服务器端就可以拿着该Cookie(即token)去数据库找对应的用户信息
              * 有的话服务端就可以直接从服务端获取该用户相关信息，无需再重新登录

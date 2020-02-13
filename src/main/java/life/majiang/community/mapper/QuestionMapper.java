@@ -7,9 +7,6 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
-/**
- * Created by codedrinker on 2019/5/2.
- */
 @Mapper
 public interface QuestionMapper {
 

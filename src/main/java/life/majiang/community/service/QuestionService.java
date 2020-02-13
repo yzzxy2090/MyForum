@@ -12,9 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by codedrinker on 2019/5/7.
- */
 @Service
 public class QuestionService {
 

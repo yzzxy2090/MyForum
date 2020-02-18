@@ -75,7 +75,12 @@ public class AuthorizeController {
             user.setAccountId(String.valueOf(githubUser.getId()));
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
-            user.setAvatarUrl(githubUser.getAvatarUrl());
+
+            if(githubUser.getAvatarUrl() == null) {
+                user.setAvatarUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1582056311949&di=111ee0ab64d52684fed42d7f6845188b&imgtype=jpg&src=http%3A%2F%2Fimg.qqzhi.com%2Fuploads%2F2018-12-15%2F094927264.jpg");
+            } else {
+                user.setAvatarUrl(githubUser.getAvatarUrl());
+            }
 
             //将新用户对象插入到数据库中
             userMapper.insert(user);

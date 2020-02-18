@@ -23,18 +23,27 @@ public class QuestionService {
     private UserMapper userMapper;
 
     public PaginationDTO list(Integer pageIndex, Integer size) {
+
         PaginationDTO paginationDTO = new PaginationDTO();
 
-        Integer totalCount = questionMapper.count();
-        paginationDTO.setPagination(totalCount, pageIndex, size);
+        Integer totalPage;
 
-        //处理访问页面越界
+        Integer totalCount = questionMapper.count();
+
+        if (totalCount % size == 0) {
+            totalPage = totalCount / size;
+        } else {
+            totalPage = totalCount / size + 1;
+        }
+
         if (pageIndex < 1) {
             pageIndex = 1;
         }
-        if (pageIndex > paginationDTO.getTotalPage()) {
-            pageIndex = paginationDTO.getTotalPage();
+        if (pageIndex > totalPage) {
+            pageIndex = totalPage;
         }
+
+        paginationDTO.setPagination(totalPage, pageIndex);
 
         /**
          * select * from question limit offset, size;
@@ -49,6 +58,45 @@ public class QuestionService {
         List<QuestionDTO> questionDTOList = new ArrayList<>();
 
         //去数据库中查到当前情况下需要展示的问题列表
+        for (Question question : questions) {
+            User user = userMapper.findById(question.getCreator());
+            QuestionDTO questionDTO = new QuestionDTO();
+            BeanUtils.copyProperties(question, questionDTO);
+            questionDTO.setUser(user);
+            questionDTOList.add(questionDTO);
+        }
+
+        paginationDTO.setQuestions(questionDTOList);
+        return paginationDTO;
+    }
+
+    public PaginationDTO list(Integer userId, Integer page, Integer size) {
+        PaginationDTO paginationDTO = new PaginationDTO();
+
+        Integer totalPage;
+
+        Integer totalCount = questionMapper.countByUserId(userId);
+
+        if (totalCount % size == 0) {
+            totalPage = totalCount / size;
+        } else {
+            totalPage = totalCount / size + 1;
+        }
+
+        if (page < 1) {
+            page = 1;
+        }
+        if (page > totalPage) {
+            page = totalPage;
+        }
+
+        paginationDTO.setPagination(totalPage, page);
+
+        //size*(page-1)
+        Integer offset = size * (page - 1);
+        List<Question> questions = questionMapper.listByUserId(userId, offset, size);
+        List<QuestionDTO> questionDTOList = new ArrayList<>();
+
         for (Question question : questions) {
             User user = userMapper.findById(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();

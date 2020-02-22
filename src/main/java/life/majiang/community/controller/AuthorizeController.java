@@ -1,10 +1,11 @@
 package life.majiang.community.controller;
 
+import life.majiang.community.provider.GithubProvider;
 import life.majiang.community.dto.AccessTokenDTO;
 import life.majiang.community.dto.GithubUser;
 import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.User;
-import life.majiang.community.provider.GithubProvider;
+import life.majiang.community.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
@@ -40,7 +42,7 @@ public class AuthorizeController {
     private String redirectUri;
 
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
 
     /**
      * GitHub用户接受该授权请求，则GitHub将带着code和state参数重定向到自己之前注册的那个callback地址
@@ -65,25 +67,26 @@ public class AuthorizeController {
 
         /**
          * 登陆成功，写Cookie
-         * 新建一个论坛用户并将其信息和该GitHub用户信息绑定起来
+         * 新建一个论坛用户并为该用户创建一个唯一标识token写入到cookie授权给客户端(浏览器)
+         * 之后浏览器再访问服务器时，服务器可以凭此token找到相应的session，从而实现登录持久化
          */
         if (githubUser != null && githubUser.getId() != null) {
+
             User user = new User();
+            //通过UUID为当前用户创建一个唯一标识
+            //如果当前用户是一个新用户，则新建token等信息，否则只更新token
             String token = UUID.randomUUID().toString();
+
+            user.setAccountId(String.valueOf(githubUser.getId()));
             user.setToken(token);
             user.setName(githubUser.getName());
-            user.setAccountId(String.valueOf(githubUser.getId()));
-            user.setGmtCreate(System.currentTimeMillis());
-            user.setGmtModified(user.getGmtCreate());
+            user.setAvatarUrl(githubUser.getAvatarUrl());
 
-            if(githubUser.getAvatarUrl() == null) {
-                user.setAvatarUrl("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1582056311949&di=111ee0ab64d52684fed42d7f6845188b&imgtype=jpg&src=http%3A%2F%2Fimg.qqzhi.com%2Fuploads%2F2018-12-15%2F094927264.jpg");
-            } else {
-                user.setAvatarUrl(githubUser.getAvatarUrl());
-            }
-
-            //将新用户对象插入到数据库中
-            userMapper.insert(user);
+            /**
+             * 是新用户就将其插入到数据库中然后写cookie
+             * 否则只更新token并写入cookie
+             */
+            userService.createOrUpdate(user);
             /**
              * 并将token放入Cookie加入到response中
              * 这样浏览器带着该Cookie去请求该论坛网站服务器时
@@ -100,5 +103,25 @@ public class AuthorizeController {
             // 登录失败，重新登录，重定向到首页
             return "redirect:/";
         }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request,
+                         HttpServletResponse reponse) {
+        //清除session
+        request.getSession().removeAttribute("user");
+
+        /**
+         * 清除cookie
+         * 只要新建一个同名(这里cookie名称叫token)值为null的cookie
+         * 然后设置其存活时间为0并加入到response中
+         * 就可以删除该cookie
+         */
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        reponse.addCookie(cookie);
+
+        //退出登录后返回首页
+        return "redirect:/";
     }
 }

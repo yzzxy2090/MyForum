@@ -6,6 +6,7 @@ import life.majiang.community.dto.GithubUser;
 import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.User;
 import life.majiang.community.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,7 @@ import java.util.UUID;
  * 然后在数据库中插入该用户信息
  */
 @Controller
+@Slf4j
 public class AuthorizeController {
 
     @Autowired
@@ -101,6 +103,7 @@ public class AuthorizeController {
             return "redirect:/";
         } else {
             // 登录失败，重新登录，重定向到首页
+            log.error("callback request github error, {}", githubUser);
             return "redirect:/";
         }
     }

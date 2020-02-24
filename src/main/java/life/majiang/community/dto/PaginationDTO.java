@@ -6,44 +6,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 将分页后的问题列表数据PaginationDTO传到前段
+ * 将分页后的问题/通知列表数据PaginationDTO传到前端
+ *
+ * 采用泛型<T>使这种页面传输数据类型可以带着多种类型的列表
+ * 进行分页后传到前端
  */
 
 @Data
-public class PaginationDTO {
-    private List<QuestionDTO> questions;
+public class PaginationDTO<T> {
+    private List<T> data;
     private boolean showPrevious;
     private boolean showFirstPage;
     private boolean showNext;
     private boolean showEndPage;
-    private Integer pageIndex;
+    private Integer page;
     private List<Integer> pages = new ArrayList<>();
     private Integer totalPage;
 
-    public void setPagination(Integer totalPage, Integer pageIndex) {
+    public void setPagination(Integer totalPage, Integer page) {
         this.totalPage = totalPage;
-        this.pageIndex = pageIndex;
+        this.page = page;
 
-        pages.add(pageIndex);
+        pages.add(page);
         for (int i = 1; i <= 3; i++) {
-            if (pageIndex - i > 0) {
-                pages.add(0, pageIndex - i);
+            if (page - i > 0) {
+                pages.add(0, page - i);
             }
 
-            if (pageIndex + i <= totalPage) {
-                pages.add(pageIndex + i);
+            if (page + i <= totalPage) {
+                pages.add(page + i);
             }
         }
 
         // 是否展示上一页
-        if (pageIndex == 1) {
+        if (page == 1) {
             showPrevious = false;
         } else {
             showPrevious = true;
         }
 
         // 是否展示下一页
-        if (pageIndex == totalPage) {
+        if (page == totalPage) {
             showNext = false;
         } else {
             showNext = true;
@@ -62,6 +65,5 @@ public class PaginationDTO {
         } else {
             showEndPage = true;
         }
-
     }
 }
